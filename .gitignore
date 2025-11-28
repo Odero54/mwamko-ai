@@ -3,3 +3,4 @@ __pycache__/
 mwamko_venv/
 sql/
 migrations_ids.txt
+mwamkoapp/.env
