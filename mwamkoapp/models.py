@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Float, JSON
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Float, JSON, Text
 from database import Base
 
 
@@ -16,6 +16,7 @@ class Users(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     role = Column(String, nullable=False, index=True)
+    created_at = Column(DateTime, default=func.now(), nullable=False)
 
 
 class EmergencyCases(Base):
@@ -70,3 +71,21 @@ class RescueVehicles(Base):
     current_occupancy = Column(Integer, default=0, nullable=False, index=True)
     last_update_ts = Column(DateTime, default=func.now(), nullable=False)
     current_location = Column(String, nullable=False)
+
+class Invite(Base):
+    __tablename__ = 'invites'
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    id_number = Column(String, nullable=False)
+    county = Column(String, nullable=False)
+    phone_number = Column(String, nullable=True)
+    role = Column(String, nullable=True)  # Can be assigned later by coordinator
+    token = Column(String, unique=True, index=True, nullable=False)
+    invited_by = Column(Integer, nullable=False)  # User ID of the County Coordinator
+    status = Column(String, default='PENDING', nullable=False)  # PENDING, ACCEPTED, EXPIRED
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    accepted_at = Column(DateTime, nullable=True)
