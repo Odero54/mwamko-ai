@@ -1,0 +1,5 @@
+datasets/
+__pycache__/
+mwamko_venv/
+sql/
+migrations_ids.txt
