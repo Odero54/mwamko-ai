@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from database import engine, get_db
 from models import Base
-from routers import auth, admin, cases, routes, agents
+from routers import auth, admin, cases, routes, vehicles, agents
 from agents.monitoring_agent import MonitoringAgent
 import asyncio
 
@@ -58,6 +58,7 @@ def health_check():
             "cases": "/cases", 
             "admin": "/route",
             "routes": "/cases/route",
+            "vehicles": "/vehicles",
             "ai_agents": "/ai"
         }
     }
@@ -67,7 +68,8 @@ app.include_router(auth.router)
 app.include_router(cases.router)
 app.include_router(admin.router)
 app.include_router(routes.router)
-app.include_router(agents.router)  # Add AI agents router
+app.include_router(agents.router)
+app.include_router(vehicles.router)
 
 
 if __name__ == "__main__":
