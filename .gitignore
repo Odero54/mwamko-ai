@@ -3,8 +3,9 @@ __pycache__/
 mwamko_venv/
 sql/
 migrations_ids.txt
-mwamkoapp/.env
-mwamkoapp/__pycache__/
-mwamkoapp/agents/__pycache__/
-mwamkoapp/alembic/__pycache__/
-mwamkoapp/routers/__pycache__/
+mwamko-ai-backend/.env
+mwamko-ai-backend/__pycache__/
+mwamko-ai-backend/agents/__pycache__/
+mwamko-ai-backend/alembic/__pycache__/
+mwamko-ai-backend/routers/__pycache__/
+mwamkoapp/
