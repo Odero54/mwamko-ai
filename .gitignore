@@ -1,12 +1,38 @@
-datasets/
-notebooks/
+# Python cache and virtual environments
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+myenv/
 mwamko_venv/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+notebooks/
+
+# Datasets
+datasets/
+
+# SQL / database related
 sql/
 migrations_ids.txt
+alembic.ini
+alembic/versions/
+
+# FastAPI / backend
 mwamko-ai-backend/.env
 mwamko-ai-backend/__pycache__/
 mwamko-ai-backend/agents/__pycache__/
 mwamko-ai-backend/alembic/__pycache__/
 mwamko-ai-backend/routers/__pycache__/
+
+# Frontend / app
 mwamkoapp/
+
+# OS or editor files
+*.swp
+*.swo
+.DS_Store
+.vscode/
