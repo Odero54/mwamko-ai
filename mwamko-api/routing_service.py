@@ -1,13 +1,11 @@
-import psycopg2
-from typing import List, Dict, Any
-import json
+from typing import Any, Dict, List
 
 
-def get_nodes_from_cases_and_start_point(conn: psycopg2.extensions.connection, 
-                                         case_ids: List[int], 
-                                         start_point_wkt: str) -> List[int]:
+def get_nodes_from_cases_and_start_point(
+    conn: psycopg2.extensions.connection, case_ids: List[int], start_point_wkt: str
+) -> List[int]:
     """
-    Retrieves the nearest road node IDs for a list of emergency cases 
+    Retrieves the nearest road node IDs for a list of emergency cases
     and prepends the nearest node for a starting GPS point.
     """
     print(f"DEBUG: Looking for nodes for cases: {case_ids}")
@@ -57,21 +55,21 @@ def get_nodes_from_cases_and_start_point(conn: psycopg2.extensions.connection,
             print("DEBUG: Finding start point node...")
             cursor.execute(start_point_query)
             start_node_result = cursor.fetchone()
-            
+
             if start_node_result:
-                start_node_id = start_node_result['nearest_node_id']
+                start_node_id = start_node_result["nearest_node_id"]
                 print(f"DEBUG: Start node found: {start_node_id}")
                 node_ids.append(start_node_id)
             else:
                 print("DEBUG: No start node found!")
                 raise Exception("Could not find nearest node for start point")
-            
+
             # 2. Get Nearest Nodes for Cases
             print("DEBUG: Finding case nodes...")
             cursor.execute(case_points_query, (case_ids,))
-            case_nodes = [row['nearest_node_id'] for row in cursor.fetchall()]
+            case_nodes = [row["nearest_node_id"] for row in cursor.fetchall()]
             print(f"DEBUG: Case nodes found: {case_nodes}")
-            
+
             # 3. Combine and remove duplicates using set to ensure uniqueness
             all_nodes = [start_node_id] + case_nodes
             # Use set to remove duplicates but maintain order with start node first
@@ -81,7 +79,7 @@ def get_nodes_from_cases_and_start_point(conn: psycopg2.extensions.connection,
                 if node not in seen:
                     seen.add(node)
                     unique_nodes.append(node)
-                    
+
             print(f"DEBUG: Final unique node list: {unique_nodes}")
             return unique_nodes
 
@@ -92,20 +90,22 @@ def get_nodes_from_cases_and_start_point(conn: psycopg2.extensions.connection,
         print(f"Error during node lookup: {e}")
         raise
 
-    
-def find_tsp_route(conn: psycopg2.extensions.connection, node_ids: List[int]) -> List[Dict[str, Any]]:
+
+def find_tsp_route(
+    conn: psycopg2.extensions.connection, node_ids: List[int]
+) -> List[Dict[str, Any]]:
     """
     Simple and robust TSP routing.
     """
     print(f"DEBUG: Starting TSP routing with nodes: {node_ids}")
-    
+
     if len(node_ids) < 2:
         print("DEBUG: Not enough nodes for routing")
         return []
 
     # Use the first node as both start and end for TSP
-    start_node = node_ids[0]
-    
+    node_ids[0]
+
     # Simple TSP query
     routing_query = f"""
     WITH cost_matrix AS (
@@ -169,7 +169,7 @@ def find_tsp_route(conn: psycopg2.extensions.connection, node_ids: List[int]) ->
     JOIN road_segments ON final_route.edge = road_segments.id
     ORDER BY tsp_sequence, segment_sequence;
     """
-    
+
     # Alternative: Even simpler approach - direct route between nodes
     simple_routing_query = f"""
     WITH route AS (
@@ -200,40 +200,43 @@ def find_tsp_route(conn: psycopg2.extensions.connection, node_ids: List[int]) ->
     """
 
     results = []
-    
+
     try:
         with conn.cursor() as cursor:
             print("DEBUG: Executing simple routing query...")
             cursor.execute(simple_routing_query)
             results = cursor.fetchall()
-            
+
             print(f"DEBUG: Routing found {len(results)} segments")
-            
+
             # Convert to list of dictionaries
             route_segments = []
             for row in results:
                 route_segments.append(dict(row))
-            
+
             return route_segments
 
     except psycopg2.Error as e:
         conn.rollback()
         print(f"DEBUG: Routing failed with error: {e}")
         return []
-    
-def fallback_simple_route(conn: psycopg2.extensions.connection, node_ids: List[int]) -> List[Dict[str, Any]]:
+
+
+def fallback_simple_route(
+    conn: psycopg2.extensions.connection, node_ids: List[int]
+) -> List[Dict[str, Any]]:
     """
     Fallback routing - simple sequential routing between nodes.
     """
     print(f"DEBUG: Using fallback routing for nodes: {node_ids}")
-    
+
     route_segments = []
     cumulative_cost = 0.0
-    
+
     for i in range(len(node_ids) - 1):
         start_node = node_ids[i]
         end_node = node_ids[i + 1]
-        
+
         route_query = f"""
         SELECT 
             seq,
@@ -251,40 +254,45 @@ def fallback_simple_route(conn: psycopg2.extensions.connection, node_ids: List[i
         )
         WHERE edge != -1
         """
-        
+
         try:
             with conn.cursor() as cursor:
                 cursor.execute(route_query)
                 segments = cursor.fetchall()
-                
+
                 if segments:
                     for seg in segments:
                         segment_dict = dict(seg)
-                        cumulative_cost += segment_dict['segment_cost']
-                        segment_dict['cumulative_cost'] = cumulative_cost
-                        
+                        cumulative_cost += segment_dict["segment_cost"]
+                        segment_dict["cumulative_cost"] = cumulative_cost
+
                         # Get geometry for this segment
                         geom_query = f"SELECT ST_AsText(geom) as geometry_wkt FROM road_segments WHERE id = {segment_dict['edge']}"
                         cursor.execute(geom_query)
                         geom_result = cursor.fetchone()
-                        segment_dict['geometry_wkt'] = geom_result['geometry_wkt'] if geom_result else None
-                        
+                        segment_dict["geometry_wkt"] = (
+                            geom_result["geometry_wkt"] if geom_result else None
+                        )
+
                         route_segments.append(segment_dict)
                 else:
                     print(f"DEBUG: No route found from {start_node} to {end_node}")
-                    
+
         except Exception as e:
             print(f"DEBUG: Fallback routing failed for segment {i}: {e}")
             continue
-    
+
     print(f"DEBUG: Fallback routing found {len(route_segments)} segments")
     return route_segments
 
-def save_route_to_database(conn: psycopg2.extensions.connection, 
-                          status: str, 
-                          total_cost: float, 
-                          optimized_sequence: List[int],
-                          route_segments: List[Dict]) -> int:
+
+def save_route_to_database(
+    conn: psycopg2.extensions.connection,
+    status: str,
+    total_cost: float,
+    optimized_sequence: List[int],
+    route_segments: List[Dict],
+) -> int:
     """
     Save the calculated route to the routes table.
     """
@@ -293,21 +301,24 @@ def save_route_to_database(conn: psycopg2.extensions.connection,
     VALUES (%s, %s, %s, %s, NOW())
     RETURNING route_id;
     """
-    
+
     try:
         with conn.cursor() as cursor:
-            cursor.execute(insert_query, (
-                status,
-                total_cost,
-                json.dumps(optimized_sequence),
-                json.dumps(route_segments)
-            ))
+            cursor.execute(
+                insert_query,
+                (
+                    status,
+                    total_cost,
+                    json.dumps(optimized_sequence),
+                    json.dumps(route_segments),
+                ),
+            )
             result = cursor.fetchone()
-            route_id = result['route_id'] if result else None
+            route_id = result["route_id"] if result else None
             conn.commit()
             print(f"DEBUG: Route saved with ID: {route_id}")
             return route_id
-            
+
     except psycopg2.Error as e:
         conn.rollback()
         print(f"PostgreSQL Error saving route: {e}")

@@ -1,13 +1,14 @@
-import os
-from dotenv import load_dotenv
-
 # Load environment variables from the .env file
 load_dotenv(override=True)
 
+
 class Settings:
     """Class to hold application settings loaded from environment variables."""
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
-    
+
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres"
+    )
+
     # JWT Settings (for future use)
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "jwt_key")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
@@ -20,5 +21,6 @@ class Settings:
 
     class Config:
         env_file = ".env"
+
 
 settings = Settings()

@@ -1,0 +1,29 @@
+[tool.black]
+line-length = 88
+target-version = ['py312']
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | myenv
+  | __pycache__
+  | notebooks
+  | mwamkoapp/__pycache__
+  | mwamko-api/__pycache__
+  | mwamko-ai-backend/__pycache__
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+include_trailing_comma = true
+multi_line_output = 3
+combine_as_imports = true
+known_first_party = ["mwamko_api", "mwamkoapp", "mwamko-ai-backend"]
+skip = ["myenv", "notebooks", "__pycache__"]
+
+[tool.flake8]
+max-line-length = 88
+exclude = ".git,__pycache__,myenv,notebooks,mwamkoapp/__pycache__,mwamko-api/__pycache__,mwamko-ai-backend/__pycache__"
+
