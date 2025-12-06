@@ -2,6 +2,7 @@ datasets/
 notebooks/
 __pycache__/
 .venv/
+.env
 sql/
 migrations_ids.txt
 .env
