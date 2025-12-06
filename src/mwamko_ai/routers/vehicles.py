@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from datetime import datetime, timezone
 
-from database import get_db
-from routers.auth import get_current_user
-from models import RescueVehicles
+from mwamko_ai.database import get_db
+from mwamko_ai.routers.auth import get_current_user
+from mwamko_ai.models import RescueVehicles
 
 router = APIRouter(
     prefix="/vehicles",

@@ -3,41 +3,50 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from sqlalchemy.orm import Session
 from starlette import status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 import secrets
 import uuid
+import os
+import resend
 
-from database import get_db
-from models import Users, Invite
-from config import settings
+from mwamko_ai.database import get_db
+from mwamko_ai.models import Users, Invite
+from mwamko_ai.config import settings
 
 router = APIRouter(
     prefix='/auth',
     tags=['auth']
 )
 
+RESEND_API_KEY = settings.RESEND_API_KEY
+resend.api_key = RESEND_API_KEY
+
 SECRET_KEY = settings.JWT_SECRET_KEY
 ALGORITHM = settings.JWT_ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
-bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+bcrypt_context = CryptContext(
+    schemes=["argon2", "bcrypt"],
+    deprecated="auto"
+)
+
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='auth/token')
 
 # ================Utility Functions=====================
 def authenticate_user(email: str, password: str, db: Session):
     """
-    Authenticates a user based on email (or username) and password.
+    Authenticates a user based on email and password.
+    Uses bcrypt_sha256, which supports passwords of any length.
     """
     user = db.query(Users).filter(Users.email == email).first()
     
     if not user:
         return False
     
-    safe_password = password[:72]
-    if not bcrypt_context.verify(safe_password, user.hashed_password):
+    if not bcrypt_context.verify(password, user.hashed_password):
         return False
     return user
 
@@ -93,7 +102,7 @@ class CreateUserRequest(BaseModel):
     last_name: str
     id_number: str
     county: str
-    password: str
+    password: str = Field(..., min_length=8, max_length=50)
     role: str
     phone_number: str
 
@@ -109,7 +118,7 @@ class InviteUserRequest(BaseModel):
 class AcceptInviteRequest(BaseModel):
     """Data Model for accepting an invite."""
     token: str
-    password: str
+    password: str = Field(..., min_length=8, max_length=50)
 
 class AssignRoleRequest(BaseModel):
     """Data Model for assigning role to a user."""
@@ -136,20 +145,43 @@ def generate_invite_token() -> str:
     """Generate a unique invite token."""
     return str(uuid.uuid4())
 
-async def send_invite_email(email: str, token: str, coordinator_name: str):
+def send_invite_email(email: str, token: str, coordinator_name: str):
     """
-    Send invitation email to the user.
-    In production, integrate with email service like SendGrid, AWS SES, etc.
+    Send invitation email to the user using Resend API.
     """
-    # This is a placeholder - implement your email service here
-    invite_link = f"http://oderogeorge308@gmail.com/accept-invite?token={token}"
-    
-    print(f"INVITATION EMAIL (Simulated):")
-    print(f"To: {email}")
-    print(f"Subject: Invitation to Join Mwamko AI Emergency Response System")
-    print(f"Message: You have been invited by {coordinator_name} to join the Mwamko AI system.")
-    print(f"Please use this link to set up your account: {invite_link}")
-    print(f"Your token: {token}")
+    invite_link = f"https://mwamko.net/accept-invite?token={token}"
+    subject = "Invitation to join Mwamko AI Emergency Response System"
+
+    message = f"""Hello,
+
+    You have been invited by {coordinator_name} to join the Mwamko AI Emergency Response System.
+
+    Please click the link below to complete your registration:
+    {invite_link}
+
+    If you did not expect this email, you can safely ignore it.
+
+    Best,
+
+    Mwamko AI Team
+    """
+
+    try:
+        response = resend.Emails.send({
+            "from": "Mwamko AI <noreply@mwamko.net>",
+            "to": [email],  
+            "subject": subject,
+            "text": message,
+        })
+        print(f"Email sent successfully to {email}. Response: {response}")
+        return response
+        
+    except Exception as e:
+        print(f"Email sending failed to {email}:", e)
+        return None
+
+
+
     
     # In production, use:
     # await email_service.send_invitation(email, invite_link, coordinator_name)
@@ -194,20 +226,19 @@ async def create_user(
     # Use email as the username
     username_to_use = create_user_request.email
 
-    # Truncate password to the first 72 characters
-    safe_password_to_hash = create_user_request.password[:72]
-    
+    hashed_password = bcrypt_context.hash(create_user_request.password)
+
     create_user_model = Users(
-        username=username_to_use,
-        email=create_user_request.email,
-        first_name=create_user_request.first_name,
-        last_name=create_user_request.last_name,
-        phone_number=create_user_request.phone_number,
-        id_number=create_user_request.id_number,
-        county=create_user_request.county,
-        role=create_user_request.role,
-        hashed_password=bcrypt_context.hash(safe_password_to_hash), 
-        is_active=True
+    username=username_to_use,
+    email=create_user_request.email,
+    first_name=create_user_request.first_name,
+    last_name=create_user_request.last_name,
+    phone_number=create_user_request.phone_number,
+    id_number=create_user_request.id_number,
+    county=create_user_request.county,
+    role=create_user_request.role,
+    hashed_password=hashed_password, 
+    is_active=True
     )
 
     db.add(create_user_model)
@@ -341,7 +372,7 @@ async def accept_invite(
         )
     
     # Create the user account (without role initially)
-    safe_password = accept_data.password[:72]
+    hashed_password = bcrypt_context.hash(accept_data.password)
     
     user = Users(
         username=invite.email,  # Use email as username
@@ -352,7 +383,7 @@ async def accept_invite(
         id_number=invite.id_number,
         county=invite.county,
         role='PENDING',  # Default role until assigned by coordinator
-        hashed_password=bcrypt_context.hash(safe_password),
+        hashed_password=hashed_password,
         is_active=True
     )
     

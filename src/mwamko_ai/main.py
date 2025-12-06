@@ -1,17 +1,27 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from database import engine, get_db
-from models import Base
-from routers import auth, admin, cases, routes, vehicles, agents
-from agents.monitoring_agent import MonitoringAgent
+from mwamko_ai.database import engine, get_db
+from mwamko_ai.models import Base
+from mwamko_ai.routers import auth, admin, cases, routes, vehicles, agents
+from mwamko_ai.agents.monitoring_agent import MonitoringAgent
 import asyncio
 
 
 app = FastAPI(
     title="Mwamko AI Disaster Response System",
-    # description="Secure, disaster-aware routing, emergency case management, and resource allocation API.",
     description="AI-Powered emergency response coordination with agentic capabilities",
-    version="2.0.0"
+    version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Create database tables

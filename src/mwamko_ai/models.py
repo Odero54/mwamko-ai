@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Float, JSON, Text
-from database import Base
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Float, JSON, Text, ForeignKey
+from sqlalchemy.orm import relationship
+from mwamko_ai.database import Base
 
 
 class Users(Base):
@@ -17,6 +18,7 @@ class Users(Base):
     is_active = Column(Boolean, default=True)
     role = Column(String, nullable=False, index=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
+    invites_sent = relationship("Invite", back_populates="inviter")
 
 
 class EmergencyCases(Base):
@@ -73,19 +75,20 @@ class RescueVehicles(Base):
     current_location = Column(String, nullable=False)
 
 class Invite(Base):
-    __tablename__ = 'invites'
+    __tablename__ = "invites"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     id_number = Column(String, nullable=False)
     county = Column(String, nullable=False)
-    phone_number = Column(String, nullable=True)
-    role = Column(String, nullable=True)  # Can be assigned later by coordinator
-    token = Column(String, unique=True, index=True, nullable=False)
-    invited_by = Column(Integer, nullable=False)  # User ID of the County Coordinator
-    status = Column(String, default='PENDING', nullable=False)  # PENDING, ACCEPTED, EXPIRED
+    phone_number = Column(String, nullable=False)
+    token = Column(String, nullable=False, unique=True)
+    invited_by = Column(Integer, ForeignKey("users.id"))
+    status = Column(String, default="PENDING")
     expires_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     accepted_at = Column(DateTime, nullable=True)
+
+    inviter = relationship("Users", back_populates="invites_sent")

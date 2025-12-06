@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
 from sqlalchemy.orm import Session
-from models import EmergencyCases, Routes
+from mwamko_ai.models import EmergencyCases, Routes
 
 class MonitoringAgent:
     """Real-time monitoring and alerting agent"""

@@ -1,6 +1,6 @@
 from typing import Dict, List, Any
 from sqlalchemy.orm import Session
-from models import EmergencyCases, Users
+from mwamko_ai.models import EmergencyCases, Users
 
 class ResourceAllocationAgent:
     """AI agent for optimal resource allocation"""

@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from database import get_db
-from routers.auth import get_current_user
-from models import EmergencyCases
-from routing_service import find_tsp_route, get_nodes_from_cases_and_start_point, save_route_to_database
-from config import settings 
+from mwamko_ai.database import get_db
+from mwamko_ai.routers.auth import get_current_user
+from mwamko_ai.models import EmergencyCases
+from mwamko_ai.routing_service import find_tsp_route, get_nodes_from_cases_and_start_point, save_route_to_database
+from mwamko_ai.config import settings 
 import json
 
 

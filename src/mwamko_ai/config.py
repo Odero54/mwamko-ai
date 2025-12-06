@@ -7,6 +7,7 @@ load_dotenv(override=True)
 class Settings:
     """Class to hold application settings loaded from environment variables."""
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
+    RESEND_API_KEY: str = os.getenv("RESEND_API_KEY", "resend_key")
     
     # JWT Settings (for future use)
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "jwt_key")

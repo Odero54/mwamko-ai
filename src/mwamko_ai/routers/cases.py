@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from database import get_db
-from models import EmergencyCases, Users
-from routers.auth import get_current_user
+from mwamko_ai.database import get_db
+from mwamko_ai.models import EmergencyCases, Users
+from mwamko_ai.routers.auth import get_current_user
 
 router = APIRouter(
     prefix='/api/v1',

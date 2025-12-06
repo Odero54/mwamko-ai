@@ -7,10 +7,10 @@ from datetime import datetime, timedelta
 import asyncio
 import json
 
-from database import get_db
-from routers.auth import get_current_user
-from models import EmergencyCases, Routes, Users
-from config import settings
+from mwamko_ai.database import get_db
+from mwamko_ai.routers.auth import get_current_user
+from mwamko_ai.models import EmergencyCases, Routes, Users
+from mwamko_ai.config import settings
 
 
 router = APIRouter(

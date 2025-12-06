@@ -2,10 +2,10 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from database import get_db
-from routers.auth import get_current_user
-from routers.admin import get_current_county_coordinator
-from models import Routes, EmergencyCases, Users, ArchivedRoutes
+from mwamko_ai.database import get_db
+from mwamko_ai.routers.auth import get_current_user
+from mwamko_ai.routers.admin import get_current_county_coordinator
+from mwamko_ai.models import Routes, EmergencyCases, Users, ArchivedRoutes
 import json
 
 
