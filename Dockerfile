@@ -47,7 +47,7 @@ RUN uv sync --locked --offline --no-default-groups --no-editable --compile-bytec
 FROM base AS app
 
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
+ENV PORT=8001
 
 COPY --from=build /app/.venv/ ./.venv/
 COPY ./src ./src
