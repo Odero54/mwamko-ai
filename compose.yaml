@@ -1,0 +1,34 @@
+services:
+  app:
+    build:
+      context: .
+      target: app
+    container_name: mwamko-api
+    restart: always
+
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PORT: "8001"
+
+      # --- DATABASE (use Coolify secrets!) ---
+      DATABASE_URL: ${DATABASE_URL}
+
+      # Optional: Email service integration
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      FRONTEND_DOMAIN: "https://mwamko.net"
+
+    ports:
+      - "8000:8001"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+    # Coolify handles domain + SSL automatically
+    labels:
+      coolify.name: "mwamko-api"
+      coolify.description: "Backend for Mwamko AI Emergency Response"
+      coolify.autogenerate.env.default: "false"

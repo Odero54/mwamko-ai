@@ -23,7 +23,8 @@ dependencies = [
     "geopandas",
     "jupyterlab",
     "geoalchemy2",
-    "resend"
+    "resend",
+    "gunicorn"
 ]
 
 [build-system]
