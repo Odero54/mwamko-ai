@@ -54,4 +54,4 @@ COPY ./src ./src
 
 EXPOSE ${PORT}
 
-CMD ["uv", "run", "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "src.mwamko_ai.main:app"]
+CMD ["uv", "run", "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "src.mwamko_ai.main:app", "--bind", "0.0.0.0:8000"]

@@ -1,0 +1,13 @@
+{
+  "build": {
+    "nixpkg": ["python312"],
+    "phases": {
+      "setup": "pip install uv",
+      "install": "uv sync --locked",
+      "build": "echo 'Build complete'"
+    }
+  },
+  "start": {
+    "cmd": "uv run gunicorn -k uvicorn.workers.UvicornWorker src.mwamko_ai.main:app"
+  }
+}
