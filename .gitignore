@@ -10,3 +10,4 @@ mwamko-ai-backend/agents/__pycache__/
 mwamko-ai-backend/alembic/__pycache__/
 mwamko-ai-backend/routers/__pycache__/
 mwamkoapp/
+users.txt
