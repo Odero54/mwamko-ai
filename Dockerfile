@@ -50,7 +50,8 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 
 COPY --from=build /app/.venv/ ./.venv/
+COPY ./src ./src
 
 EXPOSE ${PORT}
 
-CMD ["uv", "run", "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "mwamko_ai.main:app"]
+CMD ["uv", "run", "gunicorn", "-k", "uvicorn.workers.UvicornWorker", "src.mwamko_ai.main:app"]
