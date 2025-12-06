@@ -1,0 +1,16 @@
+[phases.setup]
+nixPkgs = ["python312", "postgresql_16"]
+
+[phases.install]
+cmds = [
+    "pip install uv",
+    "uv pip install --system -r requirements.txt || uv sync"
+]
+
+[phases.build]
+cmds = [
+    "pip install -e ."
+]
+
+[start]
+cmd = "gunicorn -k uvicorn.workers.UvicornWorker src.mwamko_ai.main:app --bind 0.0.0.0:$PORT"
