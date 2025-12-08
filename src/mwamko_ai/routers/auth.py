@@ -145,44 +145,58 @@ def generate_invite_token() -> str:
     """Generate a unique invite token."""
     return str(uuid.uuid4())
 
-def send_invite_email(email: str, token: str, coordinator_name: str):
-    """
-    Send invitation email to the user using Resend API.
-    """
-    invite_link = f"https://mwamko.net/accept-invite?token={token}"
-    subject = "Invitation to join Mwamko AI Emergency Response System"
+# def send_invite_email(email: str, token: str, coordinator_name: str):
+#     """
+#     Send invitation email to the user using Resend API.
+#     """
+#     invite_link = f"https://mwamko.net/accept-invite?token={token}"
+#     subject = "Invitation to join Mwamko AI Emergency Response System"
 
-    message = f"""Hello,
+#     message = f"""Hello,
 
-    You have been invited by {coordinator_name} to join the Mwamko AI Emergency Response System.
+#     You have been invited by {coordinator_name} to join the Mwamko AI Emergency Response System.
 
-    Please click the link below to complete your registration:
-    {invite_link}
+#     Please click the link below to complete your registration:
+#     {invite_link}
 
-    If you did not expect this email, you can safely ignore it.
+#     If you did not expect this email, you can safely ignore it.
 
-    Best,
+#     Best,
 
-    Mwamko AI Team
-    """
+#     Mwamko AI Team
+#     """
 
-    try:
-        response = resend.Emails.send({
-            "from": "Mwamko AI <noreply@mwamko.net>",
-            "to": [email],  
-            "subject": subject,
-            "text": message,
-        })
-        print(f"Email sent successfully to {email}. Response: {response}")
-        return response
+#     try:
+#         response = resend.Emails.send({
+#             "from": "Mwamko AI <noreply@mwamko.net>",
+#             "to": [email],  
+#             "subject": subject,
+#             "text": message,
+#         })
+#         print(f"Email sent successfully to {email}. Response: {response}")
+#         return response
         
-    except Exception as e:
-        print(f"Email sending failed to {email}:", e)
-        return None
+#     except Exception as e:
+#         print(f"Email sending failed to {email}:", e)
+#         return None
 
+async def send_invite_email(email: str, token: str, coordinator_name: str):
+    """
+    Send invitation email to the user.
+    In production, integrate with email service like SendGrid, AWS SES, etc.
+    """
+    # This is a placeholder - implement your email service here
+    invite_link = f"http://oderogeorge308@gmail.com/accept-invite?token={token}"
 
+    print(f"INVITATION EMAIL (Simulated):")
+    print(f"To: {email}")
+    print(f"Subject: Invitation to Join Mwamko AI Emergency Response System")
+    print(
+        f"Message: You have been invited by {coordinator_name} to join the Mwamko AI system."
+    )
+    print(f"Please use this link to set up your account: {invite_link}")
+    print(f"Your token: {token}")
 
-    
     # In production, use:
     # await email_service.send_invitation(email, invite_link, coordinator_name)
 
