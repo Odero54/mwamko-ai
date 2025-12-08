@@ -3,32 +3,29 @@ services:
     build:
       context: .
       target: app
-    container_name: mwamko-api
-    restart: always
-
+    container_name: mwamko-app
+    ports:
+      - "8000:8000"
     environment:
       PYTHONUNBUFFERED: "1"
-      PORT: "8001"
+      PORT: "8000"
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/mwamko"
+    depends_on:
+      - db
 
-      # --- DATABASE (use Coolify secrets!) ---
-      DATABASE_URL: ${DATABASE_URL}
-
-      # Optional: Email service integration
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      FRONTEND_DOMAIN: "https://mwamko.net"
-
+  db:
+    image: pgrouting/pgrouting:16-3.5-3.7
+    container_name: mwamko-db
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "8000:8001"
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
 
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-    # Coolify handles domain + SSL automatically
-    labels:
-      coolify.name: "mwamko-api"
-      coolify.description: "Backend for Mwamko AI Emergency Response"
-      coolify.autogenerate.env.default: "false"
+volumes:
+  postgres_data:
