@@ -1,17 +1,4 @@
--- Create database if not exists
-DO
-$do$
-BEGIN
-   IF NOT EXISTS (
-      SELECT FROM pg_database WHERE datname = 'mwamko'
-   ) THEN
-      CREATE DATABASE mwamko;
-   END IF;
-END
-$do$;
-
--- Connect to DB
-\c mwamko;
+CREATE DATABASE mwamko;
 
 -- Enable PostGIS
 CREATE EXTENSION IF NOT EXISTS postgis;

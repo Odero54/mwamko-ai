@@ -26,6 +26,7 @@ FROM deps AS build
 
 COPY ./src ./src
 COPY ./pyproject.toml ./uv.lock ./
+
 RUN uv sync --locked --offline --no-default-groups --no-editable --compile-bytecode
 
 # ========================== #
