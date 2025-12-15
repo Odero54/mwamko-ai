@@ -1,0 +1,81 @@
+## Users
+
+{
+  "user_id": 1,
+  "email": "oderogeorge308@gmail.com",
+  "first_name": "George",
+  "last_name": "Odero",
+  "id_number": "37655226",
+  "county": "Taita Taveta",
+  "password": "geo@123!",
+  "role": "County Coordinator",
+  "phone_number": "+254790749497"
+}
+
+{
+  "user_id": 2,
+  "email": "oderogeotech@gmail.com",
+  "first_name": "Geo",
+  "last_name": "Tech",
+  "id_number": "56432453",
+  "county": "Taita Taveta",
+  "phone_number": "+254740576589",
+  "password": "brc@62!21",
+  "role": "Community Manager"
+}
+
+{
+  "user_id": 3,
+  "email": "oderobtechgeo@gmail.com",
+  "first_name": "Geotech",
+  "last_name": "Odeny",
+  "id_number": "546783452",
+  "county": "Taita Taveta",
+  "phone_number": "+25475323456431",
+  "password": "!GeoTechO2924!",
+  "role": "Rescue Team"
+}
+
+## Cases
+
+{
+  "village": "Mwatate",
+  "disaster_type": "Wildlife Conflict",
+  "severity": "High",
+  "description": "Elephants invading farmland, crops destroyed",
+  "location": "38.3736,-3.5025"
+}
+
+{
+  "village": "Voi Town",
+  "disaster_type": "Fire",
+  "severity": "Critical",
+  "description": "Market fire spreading to nearby buildings",
+  "location": "38.5560,-3.3948"
+}
+
+{
+  "village": "Kibera",
+  "disaster_type": "Floods",
+  "severity": "Critical",
+  "description": "Severe flooding in residential areas after heavy rains, multiple homes affected",
+  "location": "38.5569,-3.3968"
+}
+
+{
+  "village": "Taveta",
+  "disaster_type": "Drought",
+  "severity": "Medium",
+  "description": "Severe water shortage affecting livestock and agriculture",
+  "location": "37.6764,-3.3984"
+}
+
+{
+  "village": "Wundanyi",
+  "disaster_type": "Landslide",
+  "severity": "High",
+  "description": "Landslide blocking major access road after heavy rainfall",
+  "location": "38.3622,-3.4022"
+}
+
+### Calculating Route

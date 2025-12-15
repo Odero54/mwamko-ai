@@ -6,20 +6,20 @@ load_dotenv(override=True)
 
 class Settings:
     """Class to hold application settings loaded from environment variables."""
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
-    RESEND_API_KEY: str = os.getenv("RESEND_API_KEY", "resend_key")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@db:5432/mwamko")
+    RESEND_API_KEY: str = os.getenv("RESEND_API_KEY", "re_PwdMP987_J78K49HV3ozS43PddKH54Huc")
     
     # JWT Settings (for future use)
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "jwt_key")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "a6fe0dba82bb8ce804b8718e5dce64023b8d39fece62410e5b56e626dfc9c9c9")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
     # AI Settings
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "openai")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "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")
     AI_MODEL: str = "gpt-4"
     ENABLE_AI_AGENTS: bool = True
 
     class Config:
-        env_file = ".env"
+        env_file = "/Users/georgeodero/mwamko-ai/.env"
 
 settings = Settings()
